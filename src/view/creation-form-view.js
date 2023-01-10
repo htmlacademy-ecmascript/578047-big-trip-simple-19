@@ -134,29 +134,35 @@ const createFormCreationTemplate = ({point, offers, destinations}) => {
 
 
 export default class FormAddNewPointView {
+  #point = null;
+  #offers = null;
+  #destinations = null;
+
   constructor({ point, offers, destinations}) {
-    this.point = point;
-    this.offers = offers;
-    this.destinations = destinations;
+    this.#point = point;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
-  getTemplate() {
+  #element = null;
+
+  get template() {
     return createFormCreationTemplate({
-      point: this.point,
-      destinations: this.destinations,
-      offers: this.offers
+      point: this.#point,
+      destinations: this.#destinations,
+      offers: this.#offers
     });
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
