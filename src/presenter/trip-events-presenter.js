@@ -1,11 +1,15 @@
 import TripEventsListView from '../view/trip-events-list-view.js';
 import EditFormView from '../view/edit-form-view.js';
 import PointView from '../view/point-view.js';
+import NoPointView from '../view/no-point-view.js';
+import SortView from '../view/sort-view.js';
+import FilterView from '../view/filter-view.js';
 
 import {render} from '../render.js';
 
 export default class TripEventsPresenter {
   #tripEventsContainer = null;
+  #filtersContainer = null;
   #pointsModel = null;
   #offersModel = null;
   #destinationsModel = null;
@@ -16,8 +20,13 @@ export default class TripEventsPresenter {
 
   #tripEventsListComponent = new TripEventsListView();
 
-  constructor({tripEventsContainer, pointsModel, offersModel, destinationsModel}) {
+  #renderEmptyList() {
+    render(new NoPointView, this.#tripEventsListComponent.element);
+  }
+
+  constructor({tripEventsContainer, filtersContainer, pointsModel, offersModel, destinationsModel}) {
     this.#tripEventsContainer = tripEventsContainer;
+    this.#filtersContainer = filtersContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
@@ -28,6 +37,16 @@ export default class TripEventsPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
+    render(new FilterView(), this.#filtersContainer);
+    this.#renderEvents();
+  }
+
+  #renderEvents(){
+    if (!this.#routePoints.length){
+      this.#renderEmptyList();
+      return;
+    }
+    render(new SortView(), this.#tripEventsContainer);
     render(this.#tripEventsListComponent, this.#tripEventsContainer);
 
     this.#routePoints.forEach((point) => this.#renderPoint(point, this.#offers, this.#destinations));
