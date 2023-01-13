@@ -5,7 +5,7 @@ import NoPointView from '../view/no-point-view.js';
 import SortView from '../view/sort-view.js';
 import FilterView from '../view/filter-view.js';
 
-import {render} from '../render.js';
+import { render } from '../framework/render.js';
 
 export default class TripEventsPresenter {
   #tripEventsContainer = null;
@@ -24,7 +24,7 @@ export default class TripEventsPresenter {
     render(new NoPointView, this.#tripEventsListComponent.element);
   }
 
-  constructor({tripEventsContainer, filtersContainer, pointsModel, offersModel, destinationsModel}) {
+  constructor({ tripEventsContainer, filtersContainer, pointsModel, offersModel, destinationsModel }) {
     this.#tripEventsContainer = tripEventsContainer;
     this.#filtersContainer = filtersContainer;
     this.#pointsModel = pointsModel;
@@ -41,8 +41,8 @@ export default class TripEventsPresenter {
     this.#renderEvents();
   }
 
-  #renderEvents(){
-    if (!this.#routePoints.length){
+  #renderEvents() {
+    if (!this.#routePoints.length) {
       this.#renderEmptyList();
       return;
     }
@@ -52,41 +52,42 @@ export default class TripEventsPresenter {
     this.#routePoints.forEach((point) => this.#renderPoint(point, this.#offers, this.#destinations));
   }
 
-  #renderPoint(point, offers, destinations){
-    const pointComponent = new PointView({point, offers, destinations});
-    const pointEditComponent = new EditFormView({point, offers, destinations});
-
-    const replacePointToForm = () => {
-      this.#tripEventsListComponent.element.replaceChild(pointEditComponent.element, pointComponent.element);
-    };
-
-    const replaceFormToPoint = () => {
-      this.#tripEventsListComponent.element.replaceChild(pointComponent.element, pointEditComponent.element);
-    };
-
+  #renderPoint(point, offers, destinations) {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-        replaceFormToPoint();
+        replaceFormToPoint.call(this);
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replacePointToForm();
-      document.addEventListener('keydown', escKeyDownHandler);
+    const pointComponent = new PointView({
+      point,
+      offers,
+      destinations,
+      onRollupButtonClick: () => {
+        replacePointToForm.call(this);
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
     });
 
-    pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceFormToPoint();
-      document.addEventListener('keydown', escKeyDownHandler);
+    const pointEditComponent = new EditFormView({
+      point,
+      offers,
+      destinations,
+      onFormSubmit: () => {
+        replaceFormToPoint.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
     });
 
-    pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToPoint();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    });
+    function replacePointToForm() {
+      this.#tripEventsListComponent.element.replaceChild(pointEditComponent.element, pointComponent.element);
+    }
+
+    function replaceFormToPoint() {
+      this.#tripEventsListComponent.element.replaceChild(pointComponent.element, pointEditComponent.element);
+    }
 
     render(pointComponent, this.#tripEventsListComponent.element);
   }
