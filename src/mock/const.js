@@ -1,4 +1,4 @@
-export const POINTS_AMOUNT = 8;
+export const POINTS_AMOUNT = 4;
 
 export const DESCRIPTION = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.',

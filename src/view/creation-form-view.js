@@ -1,4 +1,5 @@
-import { createElement } from '../render.js';
+// import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { pointsType, DATE_FORMAT } from '../const.js';
 import { getFormatDate, getOfferAtr, getPossibleOffers, getCurrentDestination } from '../utils/utils.js';
 
@@ -133,18 +134,17 @@ const createFormCreationTemplate = ({point, offers, destinations}) => {
 };
 
 
-export default class FormAddNewPointView {
+export default class FormAddNewPointView extends AbstractView{
   #point = null;
   #offers = null;
   #destinations = null;
 
   constructor({ point, offers, destinations}) {
+    super();
     this.#point = point;
     this.#offers = offers;
     this.#destinations = destinations;
   }
-
-  #element = null;
 
   get template() {
     return createFormCreationTemplate({
@@ -152,17 +152,5 @@ export default class FormAddNewPointView {
       destinations: this.#destinations,
       offers: this.#offers
     });
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getFormatDate, getPossibleOffers, getCurrentDestination } from '../utils/utils.js';
 import { DATE_FORMAT } from '../const.js';
 const NO_ADDITIONAL_OFFERS_TEXT = 'No additional offers';
@@ -58,18 +58,22 @@ const createRoutePointTemplate = ({point, offers, destinations}) => {
 };
 
 
-export default class RoutePointView {
+export default class RoutePointView extends AbstractView{
   #point = null;
   #offers = null;
   #destinations = null;
+  #handleRollupButtonClick = null;
 
-  constructor({point, offers, destinations }) {
+  constructor({point, offers, destinations, onRollupButtonClick }) {
+    super();
     this.#point = point;
     this.#offers = offers;
     this.#destinations = destinations;
-  }
+    this.#handleRollupButtonClick = onRollupButtonClick;
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupButtonClickHandler);
 
-  #element = null;
+  }
 
   get template() {
     return createRoutePointTemplate({
@@ -79,15 +83,7 @@ export default class RoutePointView {
     });
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #rollupButtonClickHandler = () => {
+    this.#handleRollupButtonClick();
+  };
 }
