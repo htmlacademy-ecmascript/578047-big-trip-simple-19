@@ -12,5 +12,10 @@ const DATE_FORMAT = {
   time: 'HH:mm'
 };
 
-export { POINTS_TYPE, pointsType, DATE_FORMAT};
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future'
+};
+
+export { POINTS_TYPE, pointsType, DATE_FORMAT, FilterType};
 
