@@ -3,13 +3,11 @@ import EditFormView from '../view/edit-form-view.js';
 import PointView from '../view/point-view.js';
 import NoPointView from '../view/no-point-view.js';
 import SortView from '../view/sort-view.js';
-import FilterView from '../view/filter-view.js';
 
 import { render } from '../framework/render.js';
 
 export default class TripEventsPresenter {
   #tripEventsContainer = null;
-  #filtersContainer = null;
   #pointsModel = null;
   #offersModel = null;
   #destinationsModel = null;
@@ -24,9 +22,8 @@ export default class TripEventsPresenter {
     render(new NoPointView, this.#tripEventsListComponent.element);
   }
 
-  constructor({ tripEventsContainer, filtersContainer, pointsModel, offersModel, destinationsModel }) {
+  constructor({ tripEventsContainer, pointsModel, offersModel, destinationsModel }) {
     this.#tripEventsContainer = tripEventsContainer;
-    this.#filtersContainer = filtersContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
@@ -37,7 +34,6 @@ export default class TripEventsPresenter {
     this.#offers = [...this.#offersModel.offers];
     this.#destinations = [...this.#destinationsModel.destinations];
 
-    render(new FilterView(), this.#filtersContainer);
     this.#renderEvents();
   }
 
