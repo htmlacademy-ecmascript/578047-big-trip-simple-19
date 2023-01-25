@@ -1,15 +1,13 @@
 import dayjs from 'dayjs';
-
 import { pointsType } from '../const.js';
 import { getRandomArrayElement, getRandomInteger, getRandomArrayElements } from '../utils/random.js';
 import { MaxCount, MinCount } from './const.js';
 import { generateDestinations } from './destination.js';
 import { offersByTypes } from './offers.js';
 import { getPossibleOffers } from '../utils/utils.js';
-
+import { nanoid } from 'nanoid';
 
 const getDateFrom = () => (getRandomInteger(0, 10) > 5) ? dayjs().add(getRandomInteger(0, 10000), 'm').toDate() : dayjs().subtract(getRandomInteger(0, 10000), 'm').toDate();
-
 
 export const generateRoutePoint = () => {
   const type = getRandomArrayElement(pointsType);
@@ -22,7 +20,7 @@ export const generateRoutePoint = () => {
   const offersId = getRandomArrayElements(getOffersId, 0, getOffersId.length);
   const destination = getRandomArrayElement(generateDestinations());
   return {
-    id: Date.now() * Math.random(),
+    id: nanoid(),
     type,
     dateFrom,
     dateTo,
