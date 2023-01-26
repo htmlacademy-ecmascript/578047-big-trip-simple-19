@@ -10,6 +10,7 @@ const Mode = {
 export default class PointPresenter {
   #pointListContainer = null;
   #handleModeChange = null;
+  #handleDataChange = null;
 
   #pointComponent = null;
   #pointEditComponent = null;
@@ -19,9 +20,10 @@ export default class PointPresenter {
   #destinations = null;
   #mode = Mode.DEFAULT;
 
-  constructor({pointListContainer, onModeChange}) {
+  constructor({pointListContainer, onModeChange, onDataChange}) {
     this.#pointListContainer = pointListContainer;
     this.#handleModeChange = onModeChange;
+    this.#handleDataChange = onDataChange;
   }
 
   init(point, offers, destinations) {
@@ -98,7 +100,8 @@ export default class PointPresenter {
     this.#replacePointToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (point) => {
     this.#replaceFormToPoint();
+    this.#handleDataChange(point);
   };
 }

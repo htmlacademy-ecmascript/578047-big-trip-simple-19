@@ -1,6 +1,10 @@
 import dayjs from 'dayjs';
-// let uuu = dayjs().add(-7, 'day')
-// console.log(dayjs(uuu).isAfter(dayjs()))
+
+// export function updateItem(items, update) {
+//   return items.map((item) => item.id === update.id ? update : item);
+// }
+export const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
+
 export const isFutureEvent = (dateFrom) => dateFrom && dayjs(dateFrom).isAfter(dayjs());
 
 export const getFormatDate = (date, format) => dayjs(date).format(format);
