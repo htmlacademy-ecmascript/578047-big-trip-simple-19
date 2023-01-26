@@ -171,7 +171,6 @@ const createFormEditionTemplate = ({point, offers, destinations}) => {
   );
 };
 
-
 export default class FormEditionView extends AbstractView{
 
   #point = null;
@@ -201,6 +200,6 @@ export default class FormEditionView extends AbstractView{
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#point);
   };
 }
