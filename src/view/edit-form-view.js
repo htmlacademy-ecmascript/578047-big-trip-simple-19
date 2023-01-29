@@ -1,11 +1,11 @@
-import AbstractView from '../framework/view/abstract-view.js';
+// import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { pointsType, DATE_FORMAT } from '../const.js';
 import { getFormatDate, getOfferAtr, getPossibleOffers, getCurrentDestination } from '../utils/utils.js';
 
 const DEFAULT_POINT_TYPE = pointsType[0].toLocaleLowerCase();
 
 const BLANK_POINT = {
-  id: '',
   type: DEFAULT_POINT_TYPE,
   dateFrom: null,
   dateTo: null,
@@ -90,8 +90,7 @@ const createFormEditionTemplate = ({point, offers, destinations}) => {
 
   const isNew = id === '';
   const rollupButtonTemplate = !isNew ? createRollupButtonTemplate() : '';
-  const resetButtonText = isNew ? ResetButtonText.CANCEL
-    : ResetButtonText.DELETE;
+  const resetButtonText = isNew ? ResetButtonText.CANCEL : ResetButtonText.DELETE;
 
   const icon = type.toLowerCase();
 
@@ -171,35 +170,76 @@ const createFormEditionTemplate = ({point, offers, destinations}) => {
   );
 };
 
-export default class FormEditionView extends AbstractView{
+export default class EditFormView extends AbstractStatefulView{
 
-  #point = null;
   #offers = null;
   #destinations = null;
   #handleFormSubmit = null;
+  #handleRolldownButtonClick = null;
 
-  constructor({ point = BLANK_POINT, offers = [], destinations = [], onFormSubmit}) {
+  constructor({ point = BLANK_POINT, offers = [], destinations = [], onFormSubmit, onRolldownButtonClick}) {
     super();
-    this.#point = point;
+    this._setState(EditFormView.parsePointToState(point));
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleFormSubmit = onFormSubmit;
+    this.#handleRolldownButtonClick = onRolldownButtonClick;
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#formSubmitHandler);
+      .addEventListener('click', this.#rolldownButtonClickHandler);
+    this.element.querySelector('.event__type-list')
+      .addEventListener('change', this.#pointTypeChangeHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationInputHandler);
   }
 
   get template() {
     return createFormEditionTemplate({
-      point: this.#point,
+      point: this._state,
       destinations: this.#destinations,
       offers: this.#offers
     });
   }
 
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    return {...state};
+  }
+
+  reset(point) {
+    this.updateElement(EditFormView.parsePointToState(point));
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#point);
+    this.#handleFormSubmit(this._state);
+  };
+
+  #rolldownButtonClickHandler = () => {
+    this.#handleRolldownButtonClick();
+  };
+
+  #pointTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    const selectedType = evt.target.value;
+    this.updateElement({
+      type: selectedType,
+    });
+  };
+
+  #destinationInputHandler = (evt) => {
+    evt.preventDefault();
+    const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.destinationName);
+    this.updateElement({
+      destinationId: selectedDestination.id,
+    });
   };
 }
