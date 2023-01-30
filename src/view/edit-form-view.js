@@ -92,7 +92,6 @@ const createFormEditionTemplate = ({point, offers, destinations}) => {
   const isNew = id === '';
   const rollupButtonTemplate = !isNew ? createRollupButtonTemplate() : '';
   const resetButtonText = isNew ? ResetButtonText.CANCEL : ResetButtonText.DELETE;
-
   const icon = type.toLowerCase();
 
   const possibleOffers = offers.length !== 0 ? getPossibleOffers(offers, type).offers : [];
