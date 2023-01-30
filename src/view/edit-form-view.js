@@ -1,7 +1,8 @@
-// import AbstractView from '../framework/view/abstract-view.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { pointsType, DATE_FORMAT } from '../const.js';
 import { getFormatDate, getOfferAtr, getPossibleOffers, getCurrentDestination } from '../utils/utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const DEFAULT_POINT_TYPE = pointsType[0].toLocaleLowerCase();
 
@@ -66,7 +67,7 @@ const createOffersAvailableTemplate = (offers, offersId) => offers.map((offer) =
 
   return (
     `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferAtr(title)}-${ id }" type="checkbox" name="event-offer-${getOfferAtr(title)}" ${ checked }>
+    <input class="event__offer-checkbox  visually-hidden" data-offer-id="${id}" id="event-offer-${getOfferAtr(title)}-${ id }" type="checkbox" name="event-offer-${getOfferAtr(title)}" ${ checked }>
     <label class="event__offer-label" for="event-offer-${getOfferAtr(title)}-${ id }">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
@@ -176,6 +177,8 @@ export default class EditFormView extends AbstractStatefulView{
   #destinations = null;
   #handleFormSubmit = null;
   #handleRolldownButtonClick = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor({ point = BLANK_POINT, offers = [], destinations = [], onFormSubmit, onRolldownButtonClick}) {
     super();
@@ -196,6 +199,14 @@ export default class EditFormView extends AbstractStatefulView{
       .addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationInputHandler);
+
+    if ((getPossibleOffers(this.#offers, this._state.type)).offers.length) {
+      this.element.querySelector('.event__available-offers')
+        .addEventListener('change', this.#pointOfferChangeHandler);
+    }
+
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   }
 
   get template() {
@@ -216,6 +227,48 @@ export default class EditFormView extends AbstractStatefulView{
 
   reset(point) {
     this.updateElement(EditFormView.parsePointToState(point));
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
+  #setDateFromPicker() {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('input[name=event-start-time'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onChange: this.#pointDateFromChangeHandler,
+        time24hr: true
+      },
+    );
+  }
+
+  #setDateToPicker() {
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('input[name=event-end-time'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#pointDateToChangeHandler,
+        time24hr: true
+      },
+    );
   }
 
   #formSubmitHandler = (evt) => {
@@ -240,6 +293,29 @@ export default class EditFormView extends AbstractStatefulView{
     const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.destinationName);
     this.updateElement({
       destinationId: selectedDestination.id,
+    });
+  };
+
+  #pointOfferChangeHandler = (evt) => {
+    evt.preventDefault();
+    const currentOfferId = +evt.target.dataset.offerId;
+    const currentOfferIdIndex = this._state.offersId.indexOf(currentOfferId);
+    if (currentOfferIdIndex === -1) {
+      this._state.offersId.push(currentOfferId);
+    } else {
+      this._state.offersId.splice(currentOfferIdIndex, 1);
+    }
+  };
+
+  #pointDateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #pointDateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
     });
   };
 }
