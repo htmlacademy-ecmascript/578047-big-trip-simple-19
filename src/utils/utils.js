@@ -1,8 +1,7 @@
 import dayjs from 'dayjs';
 
-// export function updateItem(items, update) {
-//   return items.map((item) => item.id === update.id ? update : item);
-// }
+export const isEscKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
 export const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
 
 export const isFutureEvent = (dateFrom) => dateFrom && dayjs(dateFrom).isAfter(dayjs());
@@ -15,4 +14,6 @@ export const getPossibleOffers = (offers, type) => offers.find((offer) => offer.
 
 export const getCurrentDestination = (destinations, id) => destinations.find((destination) => destination.id === id);
 
+export const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
+export const getTodayDate = () => dayjs().toISOString();
