@@ -1,6 +1,8 @@
 import EditFormView from '../view/edit-form-view.js';
 import PointView from '../view/point-view.js';
 import {render, replace, remove} from '../framework/render.js';
+import { FormType, UpdateType, UserAction } from '../const.js';
+import { isDatesEqual, isEscKey } from '../utils/utils.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -47,6 +49,8 @@ export default class PointPresenter {
       destinations: this.#destinations,
       onFormSubmit: this.#handleFormSubmit,
       onRolldownButtonClick: this.#handleCloseEditClick,
+      onDeleteClick: this.#handleDeleteClick,
+      formType: FormType.EDITING,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -92,7 +96,7 @@ export default class PointPresenter {
   }
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscKey(evt)) {
       evt.preventDefault();
       this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
@@ -108,8 +112,24 @@ export default class PointPresenter {
     this.#replaceFormToPoint();
   };
 
-  #handleFormSubmit = (point) => {
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      !isDatesEqual(this.#point.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.#point.dateTom, update.dateTo);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
-    this.#handleDataChange(point);
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }

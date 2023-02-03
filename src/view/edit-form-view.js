@@ -1,15 +1,16 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { pointsType, DATE_FORMAT } from '../const.js';
-import { getFormatDate, getOfferAtr, getPossibleOffers, getCurrentDestination } from '../utils/utils.js';
+import { pointsType, DATE_FORMAT, FormType } from '../const.js';
+import { getFormatDate, getOfferAtr, getPossibleOffers, getCurrentDestination, getTodayDate } from '../utils/utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 
 const DEFAULT_POINT_TYPE = pointsType[0].toLocaleLowerCase();
 
 const BLANK_POINT = {
   type: DEFAULT_POINT_TYPE,
-  dateFrom: null,
-  dateTo: null,
+  dateFrom: getTodayDate(),
+  dateTo: getTodayDate(),
   destination: '',
   offersId: [],
   basePrice: 0,
@@ -86,22 +87,23 @@ const isOffers = (offers, offersId) => offers.length !== 0 ? `<section  class="e
   : '';
 
 
-const createFormEditionTemplate = ({point, offers, destinations}) => {
+const createFormEditionTemplate = ({point, offers, destinations, formType}) => {
   const { id, type, dateFrom, dateTo, offersId, destinationId, basePrice } = point;
 
+  let isEditPoint = true;
+
+  if (formType === FormType.ADDING) {
+    isEditPoint = false;
+  }
+
+  const rollupButtonTemplate = isEditPoint ? createRollupButtonTemplate() : '';
   const isNew = id === '';
-  const rollupButtonTemplate = !isNew ? createRollupButtonTemplate() : '';
   const resetButtonText = isNew ? ResetButtonText.CANCEL : ResetButtonText.DELETE;
   const icon = type.toLowerCase();
-
   const possibleOffers = offers.length !== 0 ? getPossibleOffers(offers, type).offers : [];
-
   const checkedOffers = isOffers(possibleOffers, offersId);
-
   const pointsTypeMenu = createPointsTypeMenuTemplate(type, id);
-
   const destination = getCurrentDestination(destinations, destinationId);
-
   const destinationTemplate = destination ? createDestinationTemplate(destination) : '';
   const destinationsList = destinations.map((dest) => dest.destinationName);
   const destinationCurrentName = getDestinationCurrentName(destinationId, destinations);
@@ -135,7 +137,7 @@ const createFormEditionTemplate = ({point, offers, destinations}) => {
         <label class="event__label  event__type-output" for="event-destination-${destinationId}">
         ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-${destinationId}" type="text" name="event-destination" value="${destinationCurrentName}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-${destinationId}" type="text" name="event-destination" value="${he.encode(destinationCurrentName)}" list="destination-list-1">
         <datalist id="destination-list-1">
         ${destinationsListTemplate}
         </datalist>
@@ -154,7 +156,7 @@ const createFormEditionTemplate = ({point, offers, destinations}) => {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-${id}" type="number" name="event-price" value="${basePrice}">
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -176,28 +178,38 @@ export default class EditFormView extends AbstractStatefulView{
   #destinations = null;
   #handleFormSubmit = null;
   #handleRolldownButtonClick = null;
+  #handleDeleteClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #formType = null;
 
-  constructor({ point = BLANK_POINT, offers = [], destinations = [], onFormSubmit, onRolldownButtonClick}) {
+  constructor({ point = BLANK_POINT, offers = [], destinations = [], onFormSubmit, onRolldownButtonClick, onDeleteClick, formType = FormType.ADDING}) {
     super();
     this._setState(EditFormView.parsePointToState(point));
     this.#offers = offers;
     this.#destinations = destinations;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleRolldownButtonClick = onRolldownButtonClick;
+    this.#handleDeleteClick = onDeleteClick;
+    this.#formType = formType;
     this._restoreHandlers();
   }
 
   _restoreHandlers() {
+    const rollupButtonElement = this.element.querySelector('.event__rollup-btn');
+    if (rollupButtonElement) {
+      rollupButtonElement.addEventListener('click', this.#rolldownButtonClickHandler);
+    }
     this.element.querySelector('form')
       .addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#rolldownButtonClickHandler);
+    this.element.querySelector('.event__input--price')
+      .addEventListener('input', this.#pointPriceInputHandler);
     this.element.querySelector('.event__type-list')
       .addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationInputHandler);
+    this.element.querySelector('.event__reset-btn')
+      .addEventListener('click', this.#formDeleteClickHandler);
 
     if ((getPossibleOffers(this.#offers, this._state.type)).offers.length) {
       this.element.querySelector('.event__available-offers')
@@ -212,7 +224,8 @@ export default class EditFormView extends AbstractStatefulView{
     return createFormEditionTemplate({
       point: this._state,
       destinations: this.#destinations,
-      offers: this.#offers
+      offers: this.#offers,
+      formType: this.#formType,
     });
   }
 
@@ -288,10 +301,29 @@ export default class EditFormView extends AbstractStatefulView{
   };
 
   #destinationInputHandler = (evt) => {
+    if(!this.#destinations.map((destination) => destination.destinationName).includes(evt.target.value)) {
+      evt.target.setCustomValidity('Choose one of the available cities.');
+    } else {
+      evt.target.setCustomValidity('');
+    }
+
     evt.preventDefault();
     const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.destinationName);
     this.updateElement({
       destinationId: selectedDestination.id,
+    });
+  };
+
+  #pointPriceInputHandler = (evt) => {
+    if (!new RegExp(/^[1-9]\d{0,5}$/).test(evt.target.value) || evt.target.value < 1) {
+      evt.target.setCustomValidity('Enter a positive integer.');
+    } else {
+      evt.target.setCustomValidity('');
+    }
+
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
     });
   };
 
@@ -316,5 +348,10 @@ export default class EditFormView extends AbstractStatefulView{
     this.updateElement({
       dateTo: userDate,
     });
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditFormView.parseStateToPoint(this._state));
   };
 }

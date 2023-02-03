@@ -51,5 +51,27 @@ const SortTitle = [
   },
 ];
 
-export { POINTS_TYPE, pointsType, DATE_FORMAT, FilterType, SortType, SortTitle};
+const EMPTY_LIST_MESSAGES = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+};
+
+const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const FormType = {
+  EDITING: 'edit',
+  ADDING: 'add'
+};
+
+export { POINTS_TYPE, pointsType, DATE_FORMAT, FilterType, EMPTY_LIST_MESSAGES, SortType, SortTitle, UserAction, UpdateType, FormType};
 
