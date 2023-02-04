@@ -1,3 +1,5 @@
+import { getTodayDate } from './utils/utils';
+
 const POINTS_TYPE = {
   trip: ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight'],
   stopping: ['Check-in', 'Sightseeing', 'Restaurant'],
@@ -66,6 +68,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const FormType = {
@@ -73,5 +76,17 @@ const FormType = {
   ADDING: 'add'
 };
 
-export { POINTS_TYPE, pointsType, DATE_FORMAT, FilterType, EMPTY_LIST_MESSAGES, SortType, SortTitle, UserAction, UpdateType, FormType};
+const DEFAULT_POINT_TYPE = pointsType[0].toLocaleLowerCase();
+
+const BLANK_POINT = {
+  type: DEFAULT_POINT_TYPE,
+  dateFrom: getTodayDate(),
+  dateTo: getTodayDate(),
+  destinationId: null,
+  offersId: [],
+  basePrice: '',
+};
+
+
+export { POINTS_TYPE, pointsType, DATE_FORMAT, FilterType, EMPTY_LIST_MESSAGES, SortType, SortTitle, UserAction, UpdateType, FormType, BLANK_POINT};
 

@@ -4,11 +4,11 @@ import { DATE_FORMAT } from '../const.js';
 const NO_ADDITIONAL_OFFERS_TEXT = 'No additional offers';
 
 const createOffersMarkup = (offers) => (offers.length) ?
-  offers.map(({title, priceOffer }) =>
+  offers.map(({title, price }) =>
     `<li class="event__offer">
           <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${priceOffer}</span>
+          <span class="event__offer-price">${price}</span>
         </li>`
   ).join ('\n') : NO_ADDITIONAL_OFFERS_TEXT;
 
@@ -20,7 +20,7 @@ const createRoutePointTemplate = ({point, offers, destinations}) => {
 
   const {dateShort, dateFull, time} = DATE_FORMAT;
 
-  const possibleOffers = getPossibleOffers(offers, type).offers;
+  const possibleOffers = getPossibleOffers(offers, type);
 
   const offersIdChecked = possibleOffers.filter(({id}) =>
     offersId.includes(id));
