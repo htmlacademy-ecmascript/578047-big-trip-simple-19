@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { getFormatDate, getPossibleOffers, getCurrentDestination } from '../utils/utils.js';
-import { DATE_FORMAT } from '../const.js';
+import { DateFormat } from '../const.js';
+
 const NO_ADDITIONAL_OFFERS_TEXT = 'No additional offers';
 
 const createOffersMarkup = (offers) => (offers.length) ?
@@ -14,32 +15,27 @@ const createOffersMarkup = (offers) => (offers.length) ?
 
 
 const createRoutePointTemplate = ({point, offers, destinations}) => {
+
   const {type, dateFrom, dateTo, basePrice, offersId, destinationId } = point;
-
   const typeLowerCase = type.toLowerCase();
-
-  const {dateShort, dateFull, time} = DATE_FORMAT;
-
+  const {DATE_SHORT, DATE_FULL, TIME} = DateFormat;
   const possibleOffers = getPossibleOffers(offers, type);
-
-  const offersIdChecked = possibleOffers.filter(({id}) =>
-    offersId.includes(id));
-
+  const offersIdChecked = possibleOffers.filter(({id}) => offersId.includes(id));
   const destination = getCurrentDestination(destinations, destinationId);
 
   return (
     ` <li class="trip-events__item">
       <div class="event">
-        <time class="event__date" datetime="${getFormatDate(dateFrom, dateFull)}">${getFormatDate(dateFrom, dateShort)}</time>
+        <time class="event__date" datetime="${getFormatDate(dateFrom, DATE_FULL)}">${getFormatDate(dateFrom, DATE_SHORT)}</time>
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${typeLowerCase}.png" alt="Event type icon">
         </div>
         <h3 class="event__title">${type} ${destination ? destination.destinationName : ''}</h3>
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${getFormatDate(dateFrom, dateFull)}T${getFormatDate(dateFrom, time)}">${getFormatDate(dateFrom, time)}</time>
+            <time class="event__start-time" datetime="${getFormatDate(dateFrom, DATE_FULL)}T${getFormatDate(dateFrom, TIME)}">${getFormatDate(dateFrom, TIME)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${getFormatDate(dateTo, dateFull)}T${getFormatDate(dateTo, time)}">${getFormatDate(dateTo, time)}</time>
+            <time class="event__end-time" datetime="${getFormatDate(dateTo, DATE_FULL)}T${getFormatDate(dateTo, TIME)}">${getFormatDate(dateTo, TIME)}</time>
           </p>
         </div>
         <p class="event__price">
@@ -57,7 +53,6 @@ const createRoutePointTemplate = ({point, offers, destinations}) => {
   );
 };
 
-
 export default class RoutePointView extends AbstractView{
   #point = null;
   #offers = null;
@@ -72,7 +67,6 @@ export default class RoutePointView extends AbstractView{
     this.#handleRollupButtonClick = onRollupButtonClick;
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#rollupButtonClickHandler);
-
   }
 
   get template() {
