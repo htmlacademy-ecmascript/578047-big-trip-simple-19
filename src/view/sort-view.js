@@ -2,6 +2,7 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { SortTitle } from '../const.js';
 
 function createSortItemTemplate(sortItem, currentSortItem) {
+
   const { title, type, isDisabled } = sortItem;
   const dataAtr = `data-sort-type="${type}"`;
 

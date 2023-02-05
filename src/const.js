@@ -1,17 +1,12 @@
 import { getTodayDate } from './utils/utils';
 
-const POINTS_TYPE = {
-  trip: ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight'],
-  stopping: ['Check-in', 'Sightseeing', 'Restaurant'],
-};
+const pointsType = ['Taxi', 'Bus', 'Train', 'Ship', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
 
-const pointsType = POINTS_TYPE.trip.concat(POINTS_TYPE.stopping);
-
-const DATE_FORMAT = {
-  dateShort: 'MMM DD',
-  dateFull: 'YYYY-MM-DD',
-  dateValue: 'DD/MM/YY',
-  time: 'HH:mm'
+const DateFormat = {
+  DATE_SHORT: 'MMM DD',
+  DATE_FULL: 'YYYY-MM-DD',
+  DATE_VALUE: 'DD/MM/YY',
+  TIME: 'HH:mm'
 };
 
 const FilterType = {
@@ -53,7 +48,7 @@ const SortTitle = [
   },
 ];
 
-const EMPTY_LIST_MESSAGES = {
+const EmptyListMessage = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
   [FilterType.FUTURE]: 'There are no future events now',
 };
@@ -87,6 +82,28 @@ const BLANK_POINT = {
   basePrice: '',
 };
 
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
 
-export { POINTS_TYPE, pointsType, DATE_FORMAT, FilterType, EMPTY_LIST_MESSAGES, SortType, SortTitle, UserAction, UpdateType, FormType, BLANK_POINT};
+const ResetButtonText = {
+  CANCEL: 'Cancel',
+  DELETE: 'Delete',
+  DELETETING: 'Deleting',
+};
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
+export { pointsType, DateFormat, FilterType, EmptyListMessage, SortType, SortTitle, UserAction, UpdateType, FormType, BLANK_POINT, Method, ResetButtonText, TimeLimit, Mode};
 
