@@ -58,7 +58,7 @@ const createOffersAvailableTemplate = (offers, offersId, isDisabled) => offers.m
   );
 }).join('\n');
 
-const isOffers = (offers, offersId, isDisabled) => offers.length !== 0 ? `<section  class="event__section  event__section--offers">
+const isOffersTemplate = (offers, offersId, isDisabled) => offers.length !== 0 ? `<section  class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
         ${createOffersAvailableTemplate(offers, offersId, isDisabled)}
@@ -88,7 +88,7 @@ const createFormEditionTemplate = (point, offers, destinations, formType) => {
 
   const icon = type.toLowerCase();
   const possibleOffers = offers.length !== 0 ? getPossibleOffers(offers, type) : [];
-  const checkedOffers = isOffers(possibleOffers, offersId, isDisabled);
+  const checkedOffers = isOffersTemplate(possibleOffers, offersId, isDisabled);
   const pointsTypeMenu = createPointsTypeMenuTemplate(type, id);
   const destination = getCurrentDestination(destinations, destinationId);
   const destinationTemplate = destination ? createDestinationTemplate(destination) : '';
@@ -180,6 +180,28 @@ export default class EditFormView extends AbstractStatefulView{
     this._restoreHandlers();
   }
 
+  get template() {
+    return createFormEditionTemplate(this._state, this.#offers, this.#destinations, this.#formType);
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
+  reset(point) {
+    this.updateElement(EditFormView.parsePointToState(point));
+  }
+
   _restoreHandlers() {
     const rollupButtonElement = this.element.querySelector('.event__rollup-btn');
     if (rollupButtonElement) {
@@ -204,28 +226,6 @@ export default class EditFormView extends AbstractStatefulView{
 
     this.#setDateFromPicker();
     this.#setDateToPicker();
-  }
-
-  get template() {
-    return createFormEditionTemplate(this._state, this.#offers, this.#destinations, this.#formType);
-  }
-
-  reset(point) {
-    this.updateElement(EditFormView.parsePointToState(point));
-  }
-
-  removeElement() {
-    super.removeElement();
-
-    if (this.#datepickerFrom) {
-      this.#datepickerFrom.destroy();
-      this.#datepickerFrom = null;
-    }
-
-    if (this.#datepickerTo) {
-      this.#datepickerTo.destroy();
-      this.#datepickerTo = null;
-    }
   }
 
   #setDateFromPicker() {
@@ -282,9 +282,11 @@ export default class EditFormView extends AbstractStatefulView{
 
     evt.preventDefault();
     const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.destinationName);
-    this.updateElement({
-      destinationId: selectedDestination.id,
-    });
+    if (selectedDestination) {
+      this.updateElement({
+        destinationId: selectedDestination.id,
+      });
+    }
   };
 
   #pointPriceInputHandler = (evt) => {

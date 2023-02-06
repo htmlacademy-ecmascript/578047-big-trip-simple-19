@@ -4,7 +4,7 @@ import { DateFormat } from '../const.js';
 
 const NO_ADDITIONAL_OFFERS_TEXT = 'No additional offers';
 
-const createOffersMarkup = (offers) => (offers.length) ?
+const createOffersTemplate = (offers) => (offers.length) ?
   offers.map(({title, price }) =>
     `<li class="event__offer">
           <span class="event__offer-title">${title}</span>
@@ -43,7 +43,7 @@ const createRoutePointTemplate = ({point, offers, destinations}) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
-          ${createOffersMarkup(offersIdChecked)}
+          ${createOffersTemplate(offersIdChecked)}
         </ul>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
@@ -53,7 +53,7 @@ const createRoutePointTemplate = ({point, offers, destinations}) => {
   );
 };
 
-export default class RoutePointView extends AbstractView{
+export default class PointView extends AbstractView{
   #point = null;
   #offers = null;
   #destinations = null;
