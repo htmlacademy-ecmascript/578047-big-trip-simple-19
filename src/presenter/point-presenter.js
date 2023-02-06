@@ -69,7 +69,7 @@ export default class PointPresenter {
     remove(this.#pointEditComponent);
   }
 
-  resetViev() {
+  resetView() {
     if (this.#mode !== Mode.DEFAULT) {
       this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();

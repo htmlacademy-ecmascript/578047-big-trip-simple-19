@@ -2,8 +2,6 @@ import dayjs from 'dayjs';
 
 export const isEscKey = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
-export const updateItem = (items, update) => items.map((item) => item.id === update.id ? update : item);
-
 export const isFutureEvent = (dateFrom) => dateFrom && dayjs(dateFrom).isAfter(dayjs());
 
 export const getFormatDate = (date, format) => dayjs(date).format(format);

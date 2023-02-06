@@ -22,7 +22,7 @@ const SortType = {
   OFFERS: 'offers',
 };
 
-const SortTitle = [
+const sortTitles = [
   {
     title: 'day',
     type: SortType.DAY,
@@ -105,5 +105,5 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
-export { pointsType, DateFormat, FilterType, EmptyListMessage, SortType, SortTitle, UserAction, UpdateType, FormType, BLANK_POINT, Method, ResetButtonText, TimeLimit, Mode};
+export { pointsType, DateFormat, FilterType, EmptyListMessage, SortType, sortTitles, UserAction, UpdateType, FormType, BLANK_POINT, Method, ResetButtonText, TimeLimit, Mode};
 

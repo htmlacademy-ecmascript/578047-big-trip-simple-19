@@ -148,7 +148,7 @@ export default class TripEventsPresenter {
 
   #handleModeChange = () => {
     this.#newPointPresenter.destroy();
-    this.#pointPresenters.forEach((presenter) => presenter.resetViev());
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
