@@ -6,7 +6,7 @@ export const isFutureEvent = (dateFrom) => dateFrom && dayjs(dateFrom).isAfter(d
 
 export const getFormatDate = (date, format) => dayjs(date).format(format);
 
-export const getOfferAtr = (offer) => offer.split(' ').map((el) => el.toLowerCase()).join('-');
+export const getOfferAttribute = (offer) => offer.split(' ').map((el) => el.toLowerCase()).join('-');
 
 export const getPossibleOffers = (offers, type) => offers.find((offer) => offer.typeOffer === type.toLowerCase()).offers;
 

@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { pointsType, DateFormat, FormType, BLANK_POINT, ResetButtonText } from '../const.js';
-import { getFormatDate, getOfferAtr, getPossibleOffers, getCurrentDestination } from '../utils/utils.js';
+import { getFormatDate, getOfferAttribute, getPossibleOffers, getCurrentDestination } from '../utils/utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
@@ -48,8 +48,8 @@ const createOffersAvailableTemplate = (offers, offersId, isDisabled) => offers.m
 
   return (
     `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" data-offer-id="${id}" id="event-offer-${getOfferAtr(title)}-${ id }" type="checkbox" name="event-offer-${getOfferAtr(title)}" ${ checked }${isDisabled ? 'disabled' : ''}>
-    <label class="event__offer-label" for="event-offer-${getOfferAtr(title)}-${ id }">
+    <input class="event__offer-checkbox  visually-hidden" data-offer-id="${id}" id="event-offer-${getOfferAttribute(title)}-${ id }" type="checkbox" name="event-offer-${getOfferAttribute(title)}" ${ checked }${isDisabled ? 'disabled' : ''}>
+    <label class="event__offer-label" for="event-offer-${getOfferAttribute(title)}-${ id }">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
@@ -270,6 +270,7 @@ export default class EditFormView extends AbstractStatefulView{
     const selectedType = evt.target.value;
     this.updateElement({
       type: selectedType,
+      offersId: [],
     });
   };
 
